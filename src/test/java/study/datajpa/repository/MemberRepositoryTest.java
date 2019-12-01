@@ -199,6 +199,24 @@ class MemberRepositoryTest {
         assertThat(page.hasNext()).isTrue();
     }
 
+    @Test
+    void bulkUpdate() {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member1", 19));
+        memberRepository.save(new Member("member1", 20));
+        memberRepository.save(new Member("member1", 21));
+        memberRepository.save(new Member("member1", 40));
+
+        //when
+        int i = memberRepository.bulkAgePlus(20);
+
+
+
+        //then
+        assertThat(i).isEqualTo(3);
+    }
+
 
 
 

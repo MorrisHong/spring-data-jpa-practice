@@ -310,5 +310,14 @@ class MemberRepositoryTest {
         //then
     }
 
+    @Test
+    public void callCustom() throws Exception {
+        //given
+        final List<Member> result = memberRepository.findMemberCustom();
+        //when
+
+        //then
+     }
+
 
 }

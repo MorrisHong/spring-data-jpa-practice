@@ -13,6 +13,8 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +29,9 @@ class MemberRepositoryTest {
     private MemberRepository memberRepository;
     @Autowired
     private TeamRepository teamRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     void testMember() {
@@ -216,6 +221,64 @@ class MemberRepositoryTest {
         //then
         assertThat(i).isEqualTo(3);
     }
+
+    @Test
+    public void findMemberLazy() throws Exception {
+        //given
+        //member1 -> teamA
+        //member2 -> teamB
+
+        final Team teamA = new Team("teamA");
+        final Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        final Member member1 = new Member("member1", 10, teamA);
+        final Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        final List<Member> members = memberRepository.findAll();
+        for (Member member : members) {
+            System.out.println("member = " + member);
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
+
+        //then
+     }
+
+     @Test
+     public void findMemberFetchJoin() throws Exception {
+         //given
+         //member1 -> teamA
+         //member2 -> teamB
+
+         final Team teamA = new Team("teamA");
+         final Team teamB = new Team("teamB");
+         teamRepository.save(teamA);
+         teamRepository.save(teamB);
+
+         final Member member1 = new Member("member1", 10, teamA);
+         final Member member2 = new Member("member2", 10, teamB);
+         memberRepository.save(member1);
+         memberRepository.save(member2);
+
+         em.flush();
+         em.clear();
+
+         //when
+         final List<Member> members = memberRepository.findMemberFetchJoin();
+         for (Member member : members) {
+             System.out.println("member = " + member);
+             System.out.println("member.team = " + member.getTeam().getName());
+         }
+
+         //then
+      }
 
 
 

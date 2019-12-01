@@ -78,8 +78,8 @@ class MemberRepositoryTest {
 
     @Test
     public void findByUsernameAndAgeGreaterThen() {
-        Member member1 = new Member("AAA",10);
-        Member member2 = new Member("BBB",20);
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
         memberRepository.save(member1);
         memberRepository.save(member2);
 
@@ -89,8 +89,8 @@ class MemberRepositoryTest {
 
     @Test
     void testQuery() {
-        Member member1 = new Member("AAA",10);
-        Member member2 = new Member("BBB",20);
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
         memberRepository.save(member1);
         memberRepository.save(member2);
 
@@ -102,8 +102,8 @@ class MemberRepositoryTest {
 
     @Test
     void findUsernameList() {
-        Member member1 = new Member("AAA",10);
-        Member member2 = new Member("BBB",20);
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
         memberRepository.save(member1);
         memberRepository.save(member2);
 
@@ -121,7 +121,7 @@ class MemberRepositoryTest {
         Team team = new Team("TeamA");
         teamRepository.save(team);
 
-        Member member1 = new Member("AAA",10);
+        Member member1 = new Member("AAA", 10);
         member1.setTeam(team);
         memberRepository.save(member1);
 
@@ -133,9 +133,9 @@ class MemberRepositoryTest {
 
     @Test
     void findByNames() {
-        Member member1 = new Member("AAA",10);
-        Member member2 = new Member("BBB",20);
-        Member member3 = new Member("CCC",20);
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
+        Member member3 = new Member("CCC", 20);
         memberRepository.save(member1);
         memberRepository.save(member2);
         memberRepository.save(member3);
@@ -217,7 +217,6 @@ class MemberRepositoryTest {
         int i = memberRepository.bulkAgePlus(20);
 
 
-
         //then
         assertThat(i).isEqualTo(3);
     }
@@ -249,39 +248,67 @@ class MemberRepositoryTest {
         }
 
         //then
-     }
+    }
 
-     @Test
-     public void findMemberFetchJoin() throws Exception {
-         //given
-         //member1 -> teamA
-         //member2 -> teamB
+    @Test
+    public void findMemberFetchJoin() throws Exception {
+        //given
+        //member1 -> teamA
+        //member2 -> teamB
 
-         final Team teamA = new Team("teamA");
-         final Team teamB = new Team("teamB");
-         teamRepository.save(teamA);
-         teamRepository.save(teamB);
+        final Team teamA = new Team("teamA");
+        final Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
 
-         final Member member1 = new Member("member1", 10, teamA);
-         final Member member2 = new Member("member2", 10, teamB);
-         memberRepository.save(member1);
-         memberRepository.save(member2);
+        final Member member1 = new Member("member1", 10, teamA);
+        final Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
 
-         em.flush();
-         em.clear();
+        em.flush();
+        em.clear();
 
-         //when
-         final List<Member> members = memberRepository.findMemberFetchJoin();
-         for (Member member : members) {
-             System.out.println("member = " + member);
-             System.out.println("member.team = " + member.getTeam().getName());
-         }
+        //when
+        final List<Member> members = memberRepository.findMemberFetchJoin();
+        for (Member member : members) {
+            System.out.println("member = " + member);
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
 
-         //then
-      }
+        //then
+    }
 
+    @Test
+    public void queryHint() throws Exception {
+        //given
+        final Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
 
+        //when
+        final Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
 
+        //then
+    }
+
+    @Test
+    public void lock() throws Exception {
+        //given
+        final Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        //when
+        final List<Member> findMembers = memberRepository.findLockByUsername("member1");
+        Member findMember = findMembers.get(0);
+        findMember.setUsername("member2");
+
+        //then
+    }
 
 
 }

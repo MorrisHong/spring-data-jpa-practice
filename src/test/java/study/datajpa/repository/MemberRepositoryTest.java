@@ -12,6 +12,7 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,8 @@ class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
+    @Autowired
+    EntityManager em;
 
     @Test
     @Transactional
@@ -217,5 +220,89 @@ class MemberRepositoryTest {
 
         assertEquals(3, resultCount);
 
+    }
+
+    @Test
+    @Transactional
+    void findMemberLazy() throws Exception {
+        //given
+        //member1 -> teamA
+        //member2 -> teamB
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findAll();
+
+        for (Member member : members) {
+            System.out.println("member.getUsername() = " + member.getUsername());
+            System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
+        }
+     }
+
+    @Test
+    @Transactional
+    void findMemberAndTeamFetchJoin() throws Exception {
+        //given
+        //member1 -> teamA
+        //member2 -> teamB
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findMemberFetchJoin();
+
+        for (Member member : members) {
+            System.out.println("member.getUsername() = " + member.getUsername());
+            System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
+        }
+    }
+
+    @Test
+    @Transactional
+    void findMemberEntityGraph() throws Exception {
+        //given
+        //member1 -> teamA
+        //member2 -> teamB
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findAll();
+
+        for (Member member : members) {
+            System.out.println("member.getUsername() = " + member.getUsername());
+            System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
+        }
     }
 }

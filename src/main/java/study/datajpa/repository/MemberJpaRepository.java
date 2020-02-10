@@ -54,8 +54,8 @@ public class MemberJpaRepository {
 
     public List<Member> findByPage(int age, int offset, int limit) {
         return em.createQuery("select m from Member as m" +
-                    " where m.age = :age" +
-                    " order by m.username asc", Member.class)
+                " where m.age = :age" +
+                " order by m.username asc", Member.class)
                 .setParameter("age", age)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
@@ -66,5 +66,14 @@ public class MemberJpaRepository {
         return em.createQuery("select count(m) from Member as m where m.age = :age", Long.class)
                 .setParameter("age", age)
                 .getSingleResult();
+    }
+
+    public int bulkAgePlusGreaterAndEqualThanAge(int age) {
+        return em.createQuery(
+                "update Member as m" +
+                " set m.age = m.age + 1" +
+                " where m.age >=:age")
+                .setParameter("age", age)
+                .executeUpdate();
     }
 }

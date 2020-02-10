@@ -203,4 +203,19 @@ class MemberRepositoryTest {
 
         assertEquals("member1", content.get(0).getUsername());
     }
+
+    @Test
+    @Transactional
+    void bulkUpdate() throws Exception {
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        int resultCount = memberRepository.bulkAgePlus(20);
+
+        assertEquals(3, resultCount);
+
+    }
 }

@@ -119,4 +119,18 @@ class MemberRepositoryTest {
         assertEquals(teamA.getName(), memberDtos.get(0).getTeamName());
         assertEquals(teamB.getName(), memberDtos.get(1).getTeamName());
      }
+
+    @Test
+    void test_findByNames() throws Exception {
+        //given
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> usernameList = memberRepository.findByNames(List.of(member1.getUsername(), member2.getUsername()));
+        assertEquals(2, usernameList.size());
+        assertEquals(member1.getUsername(), usernameList.get(0).getUsername());
+        assertEquals(member2.getUsername(), usernameList.get(1).getUsername());
+    }
 }

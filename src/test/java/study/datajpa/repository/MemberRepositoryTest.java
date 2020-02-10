@@ -69,6 +69,17 @@ class MemberRepositoryTest {
 
         List<Member> members = memberRepository.findByUsernameAndAgeGreaterThan("AAA", 11);
         assertEquals(1, members.size());
-
     }
+
+    @Test
+    void testQuery() throws Exception {
+        //given
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> result = memberRepository.findUser("AAA", 10);
+        assertEquals(result.get(0).getUsername(), member1.getUsername());
+     }
 }

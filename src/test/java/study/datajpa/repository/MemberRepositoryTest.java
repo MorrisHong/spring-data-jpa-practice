@@ -9,6 +9,7 @@ import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -132,5 +133,18 @@ class MemberRepositoryTest {
         assertEquals(2, usernameList.size());
         assertEquals(member1.getUsername(), usernameList.get(0).getUsername());
         assertEquals(member2.getUsername(), usernameList.get(1).getUsername());
+    }
+
+    @Test
+    void test_variety_returnType() throws Exception {
+        //given
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> findListByUsername = memberRepository.findListByUsername("AAA");
+        Optional<Member> findOptionalMemberByUsername = memberRepository.findOptionalMemberByUsername("AAA");
+        Member findMemberByUsername = memberRepository.findMemberByUsername("AAA");
     }
 }

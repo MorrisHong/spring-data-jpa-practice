@@ -60,4 +60,17 @@ class MemberJpaRepositoryTest {
          assertEquals(0, memberJpaRepository.count());
       }
 
+      @Test
+      @Transactional
+      void findByUsernameAndAgeGreaterThen() throws Exception {
+          Member member1 = new Member("AAA", 10);
+          Member member2 = new Member("AAA", 20);
+          memberJpaRepository.save(member1);
+          memberJpaRepository.save(member2);
+
+          List<Member> members = memberJpaRepository.findByUsernameAndAgeGreaterThen("AAA", 11);
+          assertEquals(1, members.size());
+
+      }
+
 }

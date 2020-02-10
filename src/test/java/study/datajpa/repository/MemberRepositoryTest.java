@@ -59,4 +59,16 @@ class MemberRepositoryTest {
         assertEquals(0, memberRepository.count());
     }
 
+    @Test
+    @Transactional
+    void findByUsernameAndAgeGreaterThen() throws Exception {
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("AAA", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> members = memberRepository.findByUsernameAndAgeGreaterThan("AAA", 11);
+        assertEquals(1, members.size());
+
+    }
 }

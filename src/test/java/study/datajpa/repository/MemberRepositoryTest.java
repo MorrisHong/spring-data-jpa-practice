@@ -3,6 +3,10 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
@@ -146,5 +150,57 @@ class MemberRepositoryTest {
         List<Member> findListByUsername = memberRepository.findListByUsername("AAA");
         Optional<Member> findOptionalMemberByUsername = memberRepository.findOptionalMemberByUsername("AAA");
         Member findMemberByUsername = memberRepository.findMemberByUsername("AAA");
+    }
+
+    @Transactional
+    @Test
+    void paging() {
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+        memberRepository.save(new Member("member6", 10));
+
+        int age = 10;
+        int offset = 0;
+        int limit = 3;
+
+        PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, "username"));
+
+        Page<Member> members = memberRepository.findByAge(age, pageRequest); //member1, member2, member3
+        Page<MemberDto> map = members.map(member -> new MemberDto(member.getId(), member.getUsername(), null));
+        for (MemberDto memberDto : map) {
+            System.out.println("memberDto = " + memberDto);
+        }
+
+        List<Member> content = members.getContent();
+        long totalElements = members.getTotalElements();
+
+        assertEquals(6, totalElements);
+        assertEquals("member1", content.get(0).getUsername());
+    }
+
+    @Transactional
+    @Test
+    void slice() {
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+        memberRepository.save(new Member("member6", 10));
+
+        int age = 10;
+        int offset = 0;
+        int limit = 3;
+
+        PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, "username"));
+
+        Slice<Member> members = memberRepository.findSliceByAge(age, pageRequest); //member1, member2, member3
+
+        List<Member> content = members.getContent();
+
+        assertEquals("member1", content.get(0).getUsername());
     }
 }

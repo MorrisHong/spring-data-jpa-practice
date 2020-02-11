@@ -4,10 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,6 +19,9 @@ class MemberTest {
 
     @Autowired
     EntityManager em;
+
+    @Autowired
+    MemberRepository memberRepository;
 
     @Test
     @Transactional
@@ -48,4 +54,23 @@ class MemberTest {
             System.out.println("member.getTeam() = " + member.getTeam());
         }
      }
+
+
+     @Test
+     void jpaEventBaseEntity() throws Exception {
+         //given
+         Member member = new Member("member1");
+         memberRepository.save(member); //@PrePersist
+
+         Thread.sleep(100);
+         member.setUsername("memberUpdate");
+
+         em.flush();
+         em.clear();
+
+         //when
+         Member findMember = memberRepository.findById(member.getId()).get();
+
+         //then
+      }
 }

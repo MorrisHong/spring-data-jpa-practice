@@ -305,4 +305,10 @@ class MemberRepositoryTest {
             System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
         }
     }
+
+    @Test
+    @Transactional
+    void callCustom() {
+        List<Member> memberCustom = memberRepository.findMemberCustom();
+    }
 }
